@@ -5,9 +5,11 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class Client {
+    protected static Socket clientSocket;
     public static void main(String[] args) throws IOException {
         Client client = new Client();
         client.conectServer();
+        client(clientSocket);
 
     }
 
@@ -19,12 +21,11 @@ public class Client {
         String[] hostPortMas = hostPort.split(":");
         String host = hostPortMas[0];
         int port = Integer.parseInt(hostPortMas[1]);
-        Socket clientSocket = new Socket(host, port);
+        clientSocket = new Socket(host, port);
 
         scanner1.close();
-        client(clientSocket);
     }
-    public void client(Socket clientSocket) {
+    public static void client(Socket clientSocket) {
         new Thread(() -> {
             try {
                 while (true) {
