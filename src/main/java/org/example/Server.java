@@ -3,21 +3,22 @@ package org.example;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Server {
-    protected final static String status = "Привет от сервера !";
-    protected static Socket clientSocket;
+    protected static List<String> users = new ArrayList<>();
+    protected static ServerSocket server;
+    protected static PrintWriter out;
+    protected static BufferedReader in;
+    protected static String msg;
 
     public static void main(String[] args) throws IOException {
-        Server server = new Server();
-        server.connect();
-
-        startServer(clientSocket);
-
+        connect();
     }
 
-    public void connect() throws IOException {
+    public static void connect() throws IOException {
         System.out.println("Запуск сервера");
         String url = "/home/acer/IdeaProjects/ServerChat/settings.txt";
         File settings = new File(url);
@@ -25,30 +26,37 @@ public class Server {
         String hostPort = scanner1.nextLine();
         String[] hostPortMas = hostPort.split(":");
         int port = Integer.parseInt(hostPortMas[1]);
-        ServerSocket serverSocket = new ServerSocket(port);
+        server = new ServerSocket(port);
+        Socket client = server.accept();
+        new Thread(() -> {
 
-        clientSocket = serverSocket.accept();
+            try {
+                while (true) {
+                    System.out.println(client);
+                    out = new PrintWriter(client.getOutputStream(), true);
+                    in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+
+                    msg = in.readLine();
+                    //new MsgClient(client);
+
+                    setAdd(msg);
+                    out.println(users);
+                }
+
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }).start();
     }
 
-    public static void startServer(Socket clientSocket) throws IOException {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    String msg = in.readLine();
+    public static void setAdd(String msg) {
+        users.add(msg);
+    }
 
-                    if (msg.equals("q")) {
-                        out.println(status);
-
-                    } else {
-                        out.println("Не правельно !");
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }).start();
+    public void end() throws IOException {
+        server.close();
     }
 }
 

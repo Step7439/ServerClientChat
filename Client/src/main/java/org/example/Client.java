@@ -2,18 +2,23 @@ package org.example;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Client {
-    protected static Socket clientSocket;
+    PrintWriter out;
+    BufferedReader in;
+    String resp;
+    Socket clientSocket;
+
     public static void main(String[] args) throws IOException {
         Client client = new Client();
-        client.conectServer();
-        client(clientSocket);
+        client.clients();
 
     }
 
-    public void conectServer() throws IOException {
+    public void clients() throws IOException {
         String url = "/home/acer/IdeaProjects/ServerChat/settings.txt";
         File setings = new File(url);
         Scanner scanner1 = new Scanner(setings);
@@ -21,31 +26,41 @@ public class Client {
         String[] hostPortMas = hostPort.split(":");
         String host = hostPortMas[0];
         int port = Integer.parseInt(hostPortMas[1]);
+
+
         clientSocket = new Socket(host, port);
 
         scanner1.close();
-    }
-    public static void client(Socket clientSocket) {
         new Thread(() -> {
+
             try {
                 while (true) {
-                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                     Scanner scanner = new Scanner(System.in);
-                    System.out.print("Write your name: ");
+                    System.out.print("- > ");
                     String name = scanner.nextLine();
+                    out = new PrintWriter(clientSocket.getOutputStream(), true);
+                    in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                     out.println(name);
-                    if (name.equals("exit")) {
-                        break;
+                    resp = in.readLine();
+
+
+                    if (resp.equals("q")) {
+                        out.close();
+                        in.close();
+                        clientSocket.close();
+                    }else {
+                        toString();
                     }
 
-                    String resp = in.readLine();
-                    System.out.println(resp);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }).start();
+    }
 
+    public String toString() {
+        System.out.println(resp);
+        return resp;
     }
 }
