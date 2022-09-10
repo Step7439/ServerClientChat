@@ -3,6 +3,7 @@ package org.example;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Server extends Thread {
@@ -19,7 +20,7 @@ public class Server extends Thread {
     }
 
     public static void main(String[] args) throws IOException {
-
+        logServer("Запуск сервера");
         System.out.println("Запуск сервера");
         String url = "/home/acer/IdeaProjects/ServerChat/settings.txt";    // Запуск сервера через файл
         File settings = new File(url);
@@ -35,6 +36,7 @@ public class Server extends Thread {
                 Socket socket = server.accept();
                 try {
                     serverList.add(new Server(socket));
+                    logServer("Подключился клиент : " + socket);
                     System.out.println("Подключился клиент : " + socket);
                 } catch (IOException e) {
                    socket.close();
@@ -61,7 +63,9 @@ public class Server extends Thread {
                 catch (NullPointerException e) {
                     this.endSocket();
                 }
-                System.out.println(msg);
+                if (msg != null) {
+                logServer(msg);
+                System.out.println(msg);}
                 for (Server vr : serverList) {
                     vr.msgSend(msg);
                 }
@@ -73,9 +77,10 @@ public class Server extends Thread {
 
     private void msgSend(String msg) { // отпровляет сообщения клиенту
         try {
+
             out.write(msg + "\n");
             out.flush();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
         }
     }
 
@@ -92,9 +97,19 @@ public class Server extends Thread {
                     }
                     serverList.remove(this);
                 }
+                logServer("Клиент выключился!");
                 System.out.println("Клиент выключился!");
             }
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            System.out.println("Hellp");
         }
+    }
+    public static void logServer(String log) throws IOException {
+        FileWriter logs = new FileWriter("log.txt", true);
+        logs.append(new SimpleDateFormat("dd.MM.yyyy HH.mm.ss ").format(Calendar.getInstance().getTime()))
+                .append(" ")
+                .append(log)
+                .append("\n")
+                .flush();
     }
 }
