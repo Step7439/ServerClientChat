@@ -7,14 +7,14 @@ import java.util.*;
 
 public class Server extends Thread {
     public static LinkedList<Server> serverList = new LinkedList<>();
-    protected final PrintWriter out;
+    protected final BufferedWriter out;
     public final BufferedReader in;
     private final Socket socket;
 
     public Server(Socket socket) throws IOException {
         this.socket = socket;
-        out = new PrintWriter(socket.getOutputStream(), true);  // переменая отпровляет сообщения
         in = new BufferedReader(new InputStreamReader(socket.getInputStream())); // переменая принемает сообщения
+        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));  // переменая отпровляет сообщения
         start();
     }
 
@@ -37,32 +37,33 @@ public class Server extends Thread {
                     serverList.add(new Server(socket));
                     System.out.println("Подключился клиент : " + socket);
                 } catch (IOException e) {
-                    socket.close();
+                   socket.close();
                 }
             }
         }
     }
 
     @Override
-    public void run() {  // поток приходят сообщения от клиента
+    public void run() {
         String msg;
         try {
             msg = in.readLine();
             out.write(msg + "\n");
             out.flush();
             while (true) {
+                msg = in.readLine();
                 try {
-                    msg = in.readLine();
                     if (msg.equals("/exit")) {
                         this.endSocket();
                         break;
                     }
-                } catch (NullPointerException ignored) {
-
+                }
+                catch (NullPointerException e) {
+                    this.endSocket();
                 }
                 System.out.println(msg);
-                for (Server msgs : serverList) {  // переберает и отпровляет сообщения клиенту
-                    msgs.msgSend(msg);
+                for (Server vr : serverList) {
+                    vr.msgSend(msg);
                 }
             }
         } catch (IOException e) {
@@ -84,6 +85,7 @@ public class Server extends Thread {
                 socket.close();
                 in.close();
                 out.close();
+
                 for (Server vr : serverList) {
                     if (vr.equals(this)) {
                         vr.interrupt();
