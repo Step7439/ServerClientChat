@@ -16,15 +16,15 @@ public class Client {
 
 
     public Client() throws IOException {
-        String url = "/home/acer/IdeaProjects/ServerChat/settings.txt";  // Запуск клиента через файл
+        String url = "/home/acer/IdeaProjects/ServerClientChat/settings.txt";  // Запуск клиента через файл
         File setings = new File(url);
         Scanner scanner1 = new Scanner(setings);
         String hostPort = scanner1.nextLine();
         String[] hostPortMas = hostPort.split(":");
-        String host = hostPortMas[0];
-        int port = Integer.parseInt(hostPortMas[1]);
+        final String HOST = hostPortMas[0];
+        final int PORT = Integer.parseInt(hostPortMas[1]);
         try {
-            clientSocket = new Socket(host, port);            // Подключения к серверу
+            clientSocket = new Socket(HOST, PORT);            // Подключения к серверу
         } catch (IOException e) {
             System.out.println("Ошибка сокет не создан!");
         }

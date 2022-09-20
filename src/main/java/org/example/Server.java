@@ -22,14 +22,14 @@ public class Server extends Thread {
     public static void main(String[] args) throws IOException {
         logServer("Запуск сервера");
         System.out.println("Запуск сервера");
-        String url = "/home/acer/IdeaProjects/ServerChat/settings.txt";    // Запуск сервера через файл
+        String url = "/home/acer/IdeaProjects/ServerClientChat/settings.txt";    // Запуск сервера через файл
         File settings = new File(url);
         Scanner scanner1 = new Scanner(settings);
         String hostPort = scanner1.nextLine();
         String[] hostPortMas = hostPort.split(":");
-        int port = Integer.parseInt(hostPortMas[1]);
+        final int PORT = Integer.parseInt(hostPortMas[1]);
 
-        try (ServerSocket server = new ServerSocket(port)) {
+        try (ServerSocket server = new ServerSocket(PORT)) {
 
 
             while (true) {

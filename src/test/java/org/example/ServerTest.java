@@ -7,8 +7,7 @@ import org.mockito.Mockito;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ServerTest {
-
-        Server server = Mockito.mock(Server.class);
+    Server server = Mockito.mock(Server.class);
 
     @Test
     void run() {
