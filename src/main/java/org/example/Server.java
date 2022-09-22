@@ -30,8 +30,6 @@ public class Server extends Thread {
         final int PORT = Integer.parseInt(hostPortMas[1]);
 
         try (ServerSocket server = new ServerSocket(PORT)) {
-
-
             while (true) {
                 Socket socket = server.accept();
                 try {
@@ -39,7 +37,7 @@ public class Server extends Thread {
                     logServer("Подключился клиент : " + socket);
                     System.out.println("Подключился клиент : " + socket);
                 } catch (IOException e) {
-                   socket.close();
+                    socket.close();
                 }
             }
         }
@@ -59,13 +57,13 @@ public class Server extends Thread {
                         this.endSocket();
                         break;
                     }
-                }
-                catch (NullPointerException e) {
+                } catch (NullPointerException e) {
                     this.endSocket();
                 }
                 if (msg != null) {
-                logServer(msg);
-                System.out.println(msg);}
+                    logServer(msg);
+                    System.out.println(msg);
+                }
                 for (Server vr : serverList) {
                     vr.msgSend(msg);
                 }
@@ -77,7 +75,6 @@ public class Server extends Thread {
 
     private void msgSend(String msg) { // отпровляет сообщения клиенту
         try {
-
             out.write(msg + "\n");
             out.flush();
         } catch (Exception e) {
@@ -104,6 +101,7 @@ public class Server extends Thread {
             System.out.println("Hellp");
         }
     }
+
     public static void logServer(String log) throws IOException {
         FileWriter logs = new FileWriter("log.txt", true);
         logs.append(new SimpleDateFormat("dd.MM.yyyy HH.mm.ss ").format(Calendar.getInstance().getTime()))

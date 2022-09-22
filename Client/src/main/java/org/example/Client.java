@@ -103,7 +103,7 @@ public class Client {
                         break;
                     } else {
                         out.write(new SimpleDateFormat("dd.MM.yyyy HH.mm.ss ").format(Calendar.getInstance().getTime())
-                        + userNick + " : " + msgWrite + "\n");
+                                + userNick + " : " + msgWrite + "\n");
                     }
                     out.flush();
                 } catch (Exception e) {
